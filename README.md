@@ -10,14 +10,14 @@ Unity 2022.3.62f3c1 + URP 14.0.12 的中学化学虚拟实验：学生设计实�
 - **判定链**：纯 C#、确定性、可脱离 Unity 批量跑；覆盖 13 类结果与 10 种典型错法（含硫酸钙、稀硫酸等干扰项）。
 - **智能助教（开发中）**：`ai-service/`读取提交的 `plan/result`，提供结果解释、L1–L3 提示、关键帧问答和学习小结；默认 mock，可切云端大模型。
 
-## unity中编辑与测试
+## 在unity中编辑与测试
 
 Unity Hub 用 **2022.3.62f3c1** 打开本目录（`Assets/` 所在目录）。   
 1. 打开场景 `Assets/Vchem/Scenes/M2_PlanPanel.unity`，Play。
 2. 构建方案（或点“看示例”）→「检查」提交 →「开始实验」。
 3. 「问助教」打开 AI 助教弹层；演示阶段底部也有「问助教」，会按当前关键帧提问（需先启动 `ai-service`，见下）。
 
-## 导出 Windows exe
+## 导出 exe文件
 
 可用 Unity 菜单 `Vchem > Build Windows Player (choose output)...` 弹窗选目录。目标目录不存在会自动创建，整包约 97MB。
 
