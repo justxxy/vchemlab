@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_LiquidBody
+  m_Shader: {fileID: 4800000, guid: b5f6850fd9358014996afca1653c64cd, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _StripeTex:
+        m_Texture: {fileID: 2800000, guid: dfeed0951db9a814ab51e63918cdd8b5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _DebugStripes: 0
+    - _DepthSpan: 1.2
+    - _FresnelPower: 3
+    - _FresnelStrength: 0.12
+    - _LiquidTopY: 0.2
+    - _Opacity: 1
+    - _Turbidity: 0
+    m_Colors:
+    - _DeepColor: {r: 0.28, g: 0.3, b: 0.31, a: 0.16}
+    - _ShallowColor: {r: 0.74, g: 0.86, b: 0.9, a: 0.22}
+    - _Tint: {r: 1, g: 1, b: 1, a: 1}
+    - _TurbidColor: {r: 0.93, g: 0.94, b: 0.92, a: 1}
+    - _WaterColor: {r: 0.3, g: 0.32, b: 0.33, a: 0.1}
+  m_BuildTextureStacks: []

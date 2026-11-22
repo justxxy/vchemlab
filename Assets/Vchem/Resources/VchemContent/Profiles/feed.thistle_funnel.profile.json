@@ -1,0 +1,40 @@
+{
+  "type": "feed.thistle_funnel",
+  "name": "长颈漏斗",
+  "kind": "lathe",
+  "source": "parametric (M3 wide spherical bowl + flared lip; stem y0..92, bowl y92..150; bowl widened 2026-11-21)",
+  "unit": "mm",
+  "height": 150.0,
+  "wall": 1.2,
+  "closed_bottom": false,
+  "segments": 48,
+  "maxChord": 0.04,
+  "profile": [
+    [0.0, 5.0],
+    [92.0, 5.0],
+    [96.0, 6.8],
+    [101.0, 11.0],
+    [107.0, 17.0],
+    [114.0, 25.0],
+    [121.0, 32.0],
+    [127.0, 36.0],
+    [133.0, 37.0],
+    [138.0, 36.0],
+    [142.0, 33.5],
+    [146.0, 31.5],
+    [148.0, 31.5],
+    [150.0, 39.5]
+  ],
+  "anchors": {
+    "top": {
+      "y": 150.0,
+      "r": 34.0,
+      "dir": "+y"
+    },
+    "bottom": {
+      "y": 0.0,
+      "r": 5.0,
+      "dir": "-y"
+    }
+  }
+}

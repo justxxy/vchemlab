@@ -1,0 +1,74 @@
+{
+  "type": "collect.gas_jar",
+  "name": "集气瓶",
+  "kind": "lathe",
+  "source": "parametric (textbook gas jar ~70x130mm; shoulder + narrow neck + lip)",
+  "unit": "mm",
+  "height": 130.0,
+  "wall": 1.8,
+  "closed_bottom": true,
+  "segments": 56,
+  "maxChord": 0.04,
+  "profile": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      34.0
+    ],
+    [
+      2.0,
+      35.0
+    ],
+    [
+      100.0,
+      35.0
+    ],
+    [
+      101.8,
+      33.96
+    ],
+    [
+      103.6,
+      31.48
+    ],
+    [
+      105.4,
+      28.52
+    ],
+    [
+      107.2,
+      26.04
+    ],
+    [
+      109.0,
+      25.0
+    ],
+    [
+      123.0,
+      25.0
+    ],
+    [
+      127.0,
+      29.0
+    ],
+    [
+      130.0,
+      29.0
+    ]
+  ],
+  "anchors": {
+    "mouth": {
+      "y": 130.0,
+      "r": 27.2,
+      "dir": "+y"
+    },
+    "body": {
+      "y": 60.0,
+      "r": 0.0,
+      "dir": "none"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "collect.water_trough",
+  "name": "水槽",
+  "kind": "box_shell",
+  "source": "parametric (textbook trough ~200x140x90mm)",
+  "unit": "mm",
+  "size": [
+    200.0,
+    90.0,
+    140.0
+  ],
+  "wall": 4.0,
+  "anchors": {
+    "basin": {
+      "y": 78.0,
+      "r": 0.0,
+      "dir": "+y"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "type": "reactor.test_tube",
+  "name": "大试管",
+  "kind": "lathe",
+  "source": "virchem/TestTube.fbx r(y); real proportion kept",
+  "unit": "mm",
+  "height": 120.0,
+  "wall": 1.2,
+  "closed_bottom": true,
+  "segments": 48,
+  "maxChord": 0.04,
+  "profile": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      2.3,
+      7.24
+    ],
+    [
+      6.91,
+      8.03
+    ],
+    [
+      112.85,
+      8.03
+    ],
+    [
+      117.46,
+      9.11
+    ]
+  ],
+  "anchors": {
+    "mouth": {
+      "y": 120.0,
+      "r": 8.2,
+      "dir": "+y"
+    },
+    "body": {
+      "y": 40.0,
+      "r": 0.0,
+      "dir": "none"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "vchem.plan/1",
+  "experimentId": "exp.co2.prepare",
+  "topology": {
+    "nodes": [
+      {
+        "id": "n1",
+        "type": "reactor.flask_conical"
+      },
+      {
+        "id": "n2",
+        "type": "feed.thistle_funnel",
+        "props": {
+          "submerged": true
+        }
+      },
+      {
+        "id": "n3",
+        "type": "conduit.bent"
+      },
+      {
+        "id": "n4",
+        "type": "collect.gas_jar",
+        "props": {
+          "orientation": "upright",
+          "covered": true
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "n2.bottom",
+        "to": "n1.mouth",
+        "kind": "feed"
+      },
+      {
+        "from": "n3.in",
+        "to": "n1.mouth",
+        "kind": "gas"
+      },
+      {
+        "from": "n3.out",
+        "to": "n4.mouth",
+        "kind": "gas",
+        "props": {
+          "depth": "deep"
+        }
+      }
+    ]
+  },
+  "verification": {
+    "fullness": "burning_splint",
+    "identity": "limewater"
+  },
+  "feeds": {
+    "solid": "reagent.caco3_lump",
+    "liquid": "reagent.water"
+  },
+  "studentId": "GOLDEN",
+  "submittedAt": "2026-11-19T00:00:00+08:00"
+}

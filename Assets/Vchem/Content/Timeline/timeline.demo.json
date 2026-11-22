@@ -1,0 +1,48 @@
+{
+  "schema": "vchem.timeline/1",
+  "class": "R-OK-01",
+  "note": "WP5 兜底事件流。字段与 M4 真流一致：t/stage/type/payload。按 01 方案 6.5 事件流 + 8.1 两幕 + 9.1 标定曲线生成。",
+  "plan": "R-OK-01.plan.json",
+  "totalSec": 32.0,
+  "stages": [
+    { "index": 1, "durationSec": 22.0 },
+    { "index": "transition", "durationSec": 2.0 },
+    { "index": 2, "durationSec": 8.0 }
+  ],
+  "curve": [
+    { "t": 0, "cumulative": 0, "arrived": 0, "held": 0 },
+    { "t": 10, "cumulative": 145, "arrived": 116, "held": 116 },
+    { "t": 18.2, "cumulative": 248, "arrived": 198, "held": 198 },
+    { "t": 22, "cumulative": 300, "arrived": 238, "held": 238 },
+    { "t": 32, "cumulative": 420, "arrived": 336, "held": 250 }
+  ],
+  "events": [
+    { "t": 0.0, "stage": 1, "type": "run.start", "payload": {} },
+    { "t": 0.6, "stage": 1, "type": "feed.add", "payload": { "slot": "liquid", "reagent": "hcl_dilute" } },
+    { "t": 0.8, "stage": 1, "type": "feed.flow", "payload": { "from": "n2", "to": "n1", "durationSec": 2.2 } },
+    { "t": 1.1, "stage": 1, "type": "liquid.level", "payload": { "node": "n1", "fraction": 0.42 } },
+    { "t": 2.1, "stage": 1, "type": "reaction.start", "payload": { "rule": "R-CO2-OK-01" } },
+    { "t": 2.4, "stage": 1, "type": "bubbles.begin", "payload": { "site": "n1.solid_liquid", "intensity": 0.5 } },
+    { "t": 6.0, "stage": 1, "type": "bubbles.rate", "payload": { "intensity": 1.0 } },
+    { "t": 20.6, "stage": 1, "type": "bubbles.rate", "payload": { "intensity": 0.72 } },
+    { "t": 20.4, "stage": 1, "type": "verify.full.begin", "payload": { "method": "burning_splint" } },
+    { "t": 22.0, "stage": 1, "type": "verify.full", "payload": { "method": "burning_splint", "result": "extinguished" } },
+    { "t": 22.4, "stage": "transition", "type": "transfer", "payload": { "to": "limewater" } },
+    { "t": 22.9, "stage": "transition", "type": "camera.push", "payload": { "dz": 0.12, "dpitch": -2.0 } },
+    { "t": 24.0, "stage": 2, "type": "test.start", "payload": { "reagent": "limewater" } },
+    { "t": 24.5, "stage": 2, "type": "bubbles.rate", "payload": { "intensity": 0.8 } },
+    { "t": 25.2, "stage": 2, "type": "turbidity.set", "payload": { "value": 0.18 } },
+    { "t": 26.0, "stage": 2, "type": "test.turbid", "payload": { "turbidity": 0.62 } },
+    { "t": 28.0, "stage": 2, "type": "turbidity.set", "payload": { "value": 0.82 } },
+    { "t": 31.0, "stage": 2, "type": "turbidity.set", "payload": { "value": 0.92 } },
+    { "t": 32.0, "stage": 2, "type": "run.end", "payload": { "outcome": "success" } }
+  ],
+  "keyframes": [
+    { "t": 1.4, "stage": 1, "label": "feed" },
+    { "t": 8.0, "stage": 1, "label": "reaction" },
+    { "t": 21.8, "stage": 1, "label": "verify" },
+    { "t": 23.4, "stage": "transition", "label": "transfer" },
+    { "t": 26.4, "stage": 2, "label": "turbid" },
+    { "t": 32.0, "stage": 2, "label": "end" }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "type": "conduit.bent",
+  "name": "导管",
+  "kind": "sweep",
+  "source": "parametric (bent glass tube, 8mm OD / 5mm ID)",
+  "unit": "mm",
+  "outer_radius": 4.0,
+  "wall": 1.5,
+  "radial_segments": 20,
+  "path": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      30,
+      0
+    ],
+    [
+      0,
+      48,
+      0
+    ],
+    [
+      6,
+      58,
+      0
+    ],
+    [
+      18,
+      64,
+      0
+    ],
+    [
+      40,
+      64,
+      0
+    ],
+    [
+      62,
+      64,
+      0
+    ],
+    [
+      62,
+      18,
+      0
+    ]
+  ],
+  "anchors": {
+    "in": {
+      "path_index": 0,
+      "dir": "+y"
+    },
+    "out": {
+      "path_index": -1,
+      "dir": "-y"
+    }
+  }
+}

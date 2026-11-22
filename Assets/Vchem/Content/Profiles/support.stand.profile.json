@@ -1,0 +1,52 @@
+{
+  "type": "support.stand",
+  "name": "铁架台",
+  "kind": "extrusion",
+  "source": "parametric (textbook stand 200x260mm)",
+  "unit": "mm",
+  "height": 260.0,
+  "parts": [
+    {
+      "shape": "box",
+      "size": [
+        200.0,
+        14.0,
+        120.0
+      ],
+      "center": [
+        0,
+        7,
+        0
+      ]
+    },
+    {
+      "shape": "cylinder",
+      "radius": 7.0,
+      "height": 240.0,
+      "center": [
+        -70,
+        134,
+        0
+      ],
+      "axis": "y"
+    },
+    {
+      "shape": "cylinder",
+      "radius": 4.0,
+      "height": 150.0,
+      "center": [
+        5,
+        220,
+        0
+      ],
+      "axis": "x"
+    }
+  ],
+  "anchors": {
+    "clamp": {
+      "y": 220.0,
+      "r": 0.0,
+      "dir": "none"
+    }
+  }
+}

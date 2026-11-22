@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Vchem 智能助教 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --ink:#1d2733; --muted:#5b6b7c; --line:#dbe3ec; --bg:#f4f7fa; --accent:#2f6fb0; --green:#1f7a4d; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:14px/1.6 "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:14px 20px; background:#fff; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:baseline; }
+    header h1 { font-size:17px; margin:0; }
+    header .hint { color:var(--muted); font-size:12px; }
+    main { max-width:1180px; margin:18px auto; padding:0 18px; display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; }
+    .card h2 { margin:0 0 10px; font-size:15px; }
+    textarea { width:100%; height:150px; resize:vertical; font:12px/1.5 Consolas, monospace; border:1px solid var(--line); border-radius:8px; padding:8px; background:#fbfdff; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    button { border:1px solid var(--line); background:#fff; border-radius:8px; padding:7px 12px; cursor:pointer; color:var(--ink); }
+    button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+    button:hover { filter:brightness(.97); }
+    input[type=text] { flex:1; min-width:220px; border:1px solid var(--line); border-radius:8px; padding:8px; }
+    #answer { white-space:pre-wrap; border-left:3px solid var(--accent); padding:8px 12px; background:#f7fbff; border-radius:6px; min-height:80px; }
+    #citations { margin-top:10px; font-size:12px; color:var(--muted); }
+    #citations div { padding:4px 0; border-bottom:1px dashed var(--line); }
+    .meta { color:var(--muted); font-size:12px; }
+    .ok { color:var(--green); }
+    .warn { color:#a45100; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>CO₂ 制取与检验 · 智能助教 Demo</h1>
+  <span class="hint" id="health">正在检查服务…</span>
+</header>
+<main>
+  <section class="card">
+    <h2>提交上下文（M2 的 plan / result）</h2>
+    <div class="row">
+      <button onclick="loadCurrent()">载入最近一次提交</button>
+      <button onclick="fillSample('R-COL-01')">示例：未液封</button>
+      <button onclick="fillSample('R-RXN-05')">示例：硫酸钙</button>
+      <button onclick="clearAll()">清空</button>
+    </div>
+    <label class="meta">plan.json</label>
+    <textarea id="plan" placeholder='粘贴 plan.json（可留空）'></textarea>
+    <label class="meta">result.json</label>
+    <textarea id="result" placeholder='粘贴 result.json'></textarea>
+    <div class="row">
+      <button class="primary" onclick="explain()">解释这次结果</button>
+      <button onclick="hint('L1')">L1 提示</button>
+      <button onclick="hint('L2')">L2 原理</button>
+      <button onclick="hint('L3')">L3 操作</button>
+      <button onclick="report()">学习小结</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>问助教 / 3D 关键帧</h2>
+    <div class="row">
+      <input id="question" type="text" placeholder="例如：木条为什么会熄灭？" />
+      <select id="keyframe" style="border:1px solid var(--line);border-radius:8px;padding:8px">
+        <option value="">不指定关键帧</option>
+        <option value="feed">加酸</option>
+        <option value="reaction">产气</option>
+        <option value="verify">验满</option>
+        <option value="transfer">转接</option>
+        <option value="turbid">石灰水变浑</option>
+        <option value="end">收尾</option>
+      </select>
+      <button class="primary" onclick="ask()">提问</button>
+    </div>
+    <div id="answer">回答会显示在这里。</div>
+    <div id="citations"></div>
+  </section>
+</main>
+
+<script>
+const sample = {
+  "R-COL-01": {
+    plan: {schema:"vchem.plan/1", topology:{nodes:[
+      {id:"n1",type:"reactor.flask_conical"},
+      {id:"n2",type:"feed.thistle_funnel",props:{submerged:false}},
+      {id:"n3",type:"conduit.bent"},
+      {id:"n4",type:"collect.gas_jar",props:{orientation:"upright",covered:true}}],
+      edges:[{from:"n2.bottom",to:"n1.mouth",kind:"feed"},{from:"n3.in",to:"n1.mouth",kind:"gas"},{from:"n3.out",to:"n4.mouth",kind:"gas",props:{depth:"deep"}}]},
+      verification:{fullness:"burning_splint",identity:"limewater"},
+      feeds:{solid:"reagent.caco3_lump",liquid:"reagent.hcl_dilute"}},
+    result: {schema:"vchem.result/1",class:"R-COL-01",outcome:"fail",errors:[],diagnosis:{summary:"漏斗未液封，气体从漏斗口逸出。"}}
+  },
+  "R-RXN-05": {
+    plan: {schema:"vchem.plan/1", topology:{nodes:[
+      {id:"n1",type:"reactor.flask_conical"},
+      {id:"n2",type:"feed.thistle_funnel",props:{submerged:true}},
+      {id:"n3",type:"conduit.bent"},
+      {id:"n4",type:"collect.gas_jar",props:{orientation:"upright",covered:true}}],
+      edges:[{from:"n2.bottom",to:"n1.mouth",kind:"feed"},{from:"n3.in",to:"n1.mouth",kind:"gas"},{from:"n3.out",to:"n4.mouth",kind:"gas",props:{depth:"deep"}}]},
+      verification:{fullness:"burning_splint",identity:"limewater"},
+      feeds:{solid:"reagent.caso4",liquid:"reagent.hcl_dilute"}},
+    result: {schema:"vchem.result/1",class:"R-RXN-05",outcome:"fail",errors:[],diagnosis:{summary:"硫酸钙与稀盐酸不反应。"}}
+  }
+};
+
+function setOut(data) {
+  document.getElementById('answer').textContent = data.answer || '(empty)';
+  const c = document.getElementById('citations');
+  c.innerHTML = '';
+  (data.citations || []).forEach(x => {
+    const d = document.createElement('div');
+    d.textContent = `[${x.id}] ${x.source || ''} — ${x.quote || ''}`;
+    c.appendChild(d);
+  });
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = `provider=${data.provider || '?'} safety=${data.safety || '?'} level=${data.level || '?'}`;
+  c.appendChild(meta);
+}
+
+async function post(path, body) {
+  const r = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  return await r.json();
+}
+
+function ctx() {
+  let plan = {}, result = {};
+  try { plan = JSON.parse(document.getElementById('plan').value || '{}'); } catch(e) { alert('plan.json 不是合法 JSON'); throw e; }
+  try { result = JSON.parse(document.getElementById('result').value || '{}'); } catch(e) { alert('result.json 不是合法 JSON'); throw e; }
+  return {plan, result};
+}
+
+async function explain() { setOut(await post('/v1/explain', ctx())); }
+async function hint(level) { setOut(await post('/v1/hint', {...ctx(), level})); }
+async function report() { setOut(await post('/v1/report', ctx())); }
+async function ask() {
+  const q = document.getElementById('question').value.trim();
+  const keyframe = document.getElementById('keyframe').value || null;
+  setOut(await post('/v1/ask', {...ctx(), question:q, keyframe}));
+}
+
+function fillSample(k) {
+  document.getElementById('plan').value = JSON.stringify(sample[k].plan, null, 2);
+  document.getElementById('result').value = JSON.stringify(sample[k].result, null, 2);
+}
+function clearAll() {
+  document.getElementById('plan').value = '';
+  document.getElementById('result').value = '';
+  document.getElementById('answer').textContent = '回答会显示在这里。';
+  document.getElementById('citations').innerHTML = '';
+}
+
+async function loadCurrent() {
+  const r = await fetch('/v1/demo/current');
+  const d = await r.json();
+  if (d.plan) document.getElementById('plan').value = JSON.stringify(d.plan, null, 2);
+  if (d.result) document.getElementById('result').value = JSON.stringify(d.result, null, 2);
+  if (!d.plan && !d.result) alert('没有找到最近提交；请先在 Unity 里提交一次，或粘贴 JSON。');
+}
+
+async function health() {
+  try {
+    const r = await fetch('/health');
+    const d = await r.json();
+    document.getElementById('health').textContent = `provider=${d.provider} · model=${d.model} · chunks=${d.chunks}`;
+  } catch(e) {
+    document.getElementById('health').textContent = '服务未启动';
+  }
+}
+health();
+</script>
+</body>
+</html>
