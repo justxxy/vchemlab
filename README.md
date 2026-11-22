@@ -55,35 +55,8 @@ LLM_TIMEOUT=30
 
 > `LLM_BASE_URL` 不要带 `/chat/completions`，程序会自动拼接。
 
-4. 重启服务并检查：
-
-```powershell
-python ai-service/app.py
-curl http://127.0.0.1:8000/health
-```
-
-`/health` 应返回 `"provider":"cloud"`；如果仍是 `mock`，检查 `.env` 路径/文件名，或环境变量是否已被外部覆盖。
-
-5. 用真实模型跑 50 条评测：
-
-```powershell
-$env:PYTHONIOENCODING="utf-8"
-python ai-service/evals/run_eval.py
-```
-
-失败会自动回退 mock（`provider=mock-fallback`），不会影响演示。
-
-**安全约定**：API Key 不提交，不发给客户端
-## 测试
-
-```powershell
-dotnet run --project Tools/JudgeRunner/JudgeRunner.csproj -- --golden Tests/Golden
-
-$env:PYTHONIOENCODING="utf-8"
-python -m unittest discover -s ai-service/tests -v
-python ai-service/evals/build_cases.py
-python ai-service/evals/run_eval.py
-```
+##演示
+![demo](demo.gif)
 
 
 ## 目录
