@@ -109,7 +109,7 @@ namespace Vchem.Core.Judge
             if (!hasCollector) errors.Add(Codes.E_STR_02);
 
             // E-STR-10 加料路径：漏斗必须真的接到发生容器；
-            // 锥形瓶必须有加料路径；大试管可按教材"预装后塞单孔塞"，允许没有漏斗。
+            // 锥形瓶必须有加料路径；试管可按教材"预装后塞单孔塞"，允许没有漏斗。
             bool hasFlask = false, hasFunnel = false;
             foreach (Node n in topo.Nodes)
             {

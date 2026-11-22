@@ -31,7 +31,7 @@ namespace Vchem.Core.Model
         {
             Add("reactor.flask_conical", "锥形瓶",
                 "mouth:mouth", "body:support");
-            Add("reactor.test_tube", "大试管",
+            Add("reactor.test_tube", "试管",
                 "mouth:mouth", "body:support");
             Add("feed.thistle_funnel", "长颈漏斗",
                 "top:feed", "bottom:feed");

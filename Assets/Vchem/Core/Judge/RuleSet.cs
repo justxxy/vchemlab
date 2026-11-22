@@ -94,7 +94,7 @@ namespace Vchem.Core.Judge
 
             // ---- 试剂类：产物/产气异常 ----
             // 固液同瓶直投：大理石已在瓶里又直接倒酸（或酸已在瓶里又直接投固体）＝反应提前触发、加料不可控。
-            // 正确操作是固体入瓶、酸经长颈漏斗加入（feed_route=funnel）；大试管预装不受此条约束。
+            // 正确操作是固体入瓶、酸经长颈漏斗加入（feed_route=funnel）；试管预装不受此条约束。
             rules.Add(New("R-RXN-04", 105, Codes.OutcomeFail, P(
                     Predicate.Eq("reactor_type", "flask"),
                     Predicate.Eq("feed_route", "direct"),

@@ -1,6 +1,6 @@
 {
   "type": "reactor.test_tube",
-  "name": "大试管",
+  "name": "试管",
   "kind": "lathe",
   "source": "virchem/TestTube.fbx r(y); real proportion kept",
   "unit": "mm",

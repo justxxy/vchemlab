@@ -33,7 +33,7 @@ namespace Vchem.Core.Judge
         /// 投料入口守卫（H5）：正确操作＝大理石放入锥形瓶、稀盐酸从长颈漏斗加入。
         /// 瓶里已有大理石再直接倒酸（或已有酸再直接投固体）会立即触发反应，
         /// 当前阶段不可同时放入锥形瓶中 → 返回 R-RXN-04，由 UI 出判定并拒绝落料。
-        /// 大试管按教材可预装，不受此守卫约束。
+        /// 试管按教材可预装，不受此守卫约束。
         /// </summary>
         public string CheckAddition(bool isSolid, bool toFlask)
         {
@@ -302,7 +302,7 @@ namespace Vchem.Core.Judge
                 {
                     Node reactor = FindByType("reactor.flask_conical") ?? FindByType("reactor.test_tube");
                     if (reactor == null)
-                        issues.Add(new PortIssue("CANVAS", "reactor", "先放一个发生容器（锥形瓶或大试管）"));
+                        issues.Add(new PortIssue("CANVAS", "reactor", "先放一个发生容器（锥形瓶或试管）"));
                     else if (conduit == null)
                         issues.Add(new PortIssue("CANVAS", "conduit", "还没有导气管：用〔导管连接〕把发生装置接到集气瓶"));
                     else

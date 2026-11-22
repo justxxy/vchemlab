@@ -20,11 +20,11 @@ namespace Vchem.Core.Judge
         public bool HasCollector;       // 有集气瓶
         public bool HasWaterTrough;     // 有水槽（排水法）
         public bool HasGasConduit;      // 有导管
-        public bool HasReactor;         // 有发生容器（锥形瓶/大试管）
+        public bool HasReactor;         // 有发生容器（锥形瓶/试管）
         public bool HasFeedFunnel;      // 有长颈漏斗
         public string ReactorType = "none"; // flask / tube / none
         public bool HasFeedPath;        // 漏斗下端真的接到了发生容器瓶口
-        public bool AdditionOk;         // 加料成立（漏斗接通并液封，或大试管预装）
+        public bool AdditionOk;         // 加料成立（漏斗接通并液封，或试管预装）
         public bool HasWaterEdge;       // 集气瓶 mouth ↔ 水槽 basin 的 water 边
 
         // 检验特征
@@ -156,7 +156,7 @@ namespace Vchem.Core.Judge
                         : "upward_displacement";
             }
 
-            // 加料是否成立：大试管可按教材预装（无漏斗）；其余必须有"接通 + 液封"的漏斗
+            // 加料是否成立：试管可按教材预装（无漏斗）；其余必须有"接通 + 液封"的漏斗
             if (f.ReactorType == "tube" && !f.HasFeedFunnel) f.AdditionOk = true;
             else f.AdditionOk = f.HasFeedPath && f.LiquidSeal;
 

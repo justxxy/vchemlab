@@ -11,7 +11,7 @@ using Vchem.Handoff;
 namespace Vchem.UI
 {
     /// <summary>
-    /// M2 方案面板（契约 2.2 / 11.1）。
+    /// 方案设计（M2 阶段，契约 2.2 / 11.1）。
     /// 三栏布局：左「容器 / 试剂」选择区、中「装置区」可拖拽画布（横向可滚动）、右「诊断意见」。
     /// 学生把器材拖入画布、在画布内拖动改位置、点击语义连接点连线；
     /// 所有操作只翻译成 DesignState 的节点/边/属性，判定链（Vchem.Core）原样不动。
@@ -230,7 +230,7 @@ namespace Vchem.UI
             GameObject root = new GameObject("M2_Panel");
             root.transform.SetParent(transform, false);
             _canvas = root.AddComponent<Canvas>();
-            // 2D 方案面板用 Overlay：ScreenSpaceCamera 在透视相机下会让 CanvasScaler 的
+            // 方案设计画布用 Overlay：ScreenSpaceCamera 在透视相机下会让 CanvasScaler 的
             // scaleFactor 与屏幕像素脱钩，窄视口下右栏会被裁掉。
             _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             _canvas.sortingOrder = 100;
@@ -244,7 +244,7 @@ namespace Vchem.UI
             Transform R = root.transform;
 
             // ---- 顶栏 ----
-            MakeText(R, "任务卡：制取一瓶 CO₂，验满，并检验它   |   M2 方案面板",
+            MakeText(R, "任务卡：制取一瓶 CO₂，验满，并检验它   |   方案设计",
                 new Vector2(16, 664), new Vector2(1248, 42), 20, FontStyle.Bold, new Color(0.1f, 0.16f, 0.24f));
             Panel(R, new Vector2(0, 658), new Vector2(1280, 3), new Color(0.30f, 0.55f, 0.78f));
 
@@ -678,7 +678,7 @@ namespace Vchem.UI
                     return;
                 }
                 if (isSolid) State.SolidReagent = reagentId;
-                else { State.LiquidReagent = reagentId; State.LiquidRoute = "direct"; }   // 大试管预装路线
+                else { State.LiquidReagent = reagentId; State.LiquidRoute = "direct"; }   // 试管预装路线
                 _funnelReagent.Clear();   // 试剂改为直接加在容器里，漏斗加料提示失效
                 ClearFunnelReagentProps();
                 // 瓶里一有液面，原本插在〔瓶内〕的漏斗下端就被淹没了 → 自动算液封
@@ -1241,7 +1241,7 @@ namespace Vchem.UI
             if (isReactorType &&
                 CountType("reactor.flask_conical") + CountType("reactor.test_tube") > 0)
             {
-                SetCaption("反应容器只能放一个（锥形瓶或大试管二选一）");
+                SetCaption("反应容器只能放一个（锥形瓶或试管二选一）");
                 return;
             }
             if (type == "feed.thistle_funnel" && CountType(type) > 0)
