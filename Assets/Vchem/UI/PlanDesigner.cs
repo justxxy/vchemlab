@@ -244,7 +244,7 @@ namespace Vchem.UI
             Transform R = root.transform;
 
             // ---- 顶栏 ----
-            MakeText(R, "任务卡：制取一瓶 CO₂，验满，并检验它   |   方案设计",
+            MakeText(R, "任务卡：制取一瓶 CO₂，并验满   |   方案设计",
                 new Vector2(16, 664), new Vector2(1248, 42), 20, FontStyle.Bold, new Color(0.1f, 0.16f, 0.24f));
             Panel(R, new Vector2(0, 658), new Vector2(1280, 3), new Color(0.30f, 0.55f, 0.78f));
 
@@ -277,7 +277,10 @@ namespace Vchem.UI
             _deviceCaption = MakeText(R, "", new Vector2(322, 576), new Vector2(612, 24), 13,
                 FontStyle.Italic, new Color(0.25f, 0.30f, 0.37f));
 
-            // 验满 / 检验融入装置面板底部：一条线与画布正文分开，两个独立模块（彼此无先后关系）
+            // 装置面板底部：验满模块 + 收集装置模块。
+            // 2026-11-23 暂撤「检验产物为 CO₂ / 澄清石灰水」模块（含按钮与状态文字）。
+            // 底层 State.Identity 仍默认 limewater，判定链与 golden 用例不受影响；
+            // 恢复时在此处重建原 Panel / 按钮 / _checkBText 即可。
             Panel(R, new Vector2(312, 190), new Vector2(632, 2), new Color(0.30f, 0.55f, 0.78f));
             Panel(R, new Vector2(312, 96), new Vector2(196, 88), new Color(0.92f, 0.95f, 0.98f));
             MakeText(R, "验满", new Vector2(322, 156), new Vector2(120, 24), 14, FontStyle.Bold, new Color(0.15f, 0.2f, 0.28f));
@@ -285,14 +288,9 @@ namespace Vchem.UI
             _btnMouthBubble = MakeButton(R, "瓶口气泡", new Vector2(416, 122), new Vector2(84, 28), OnMouthBubble).GetComponent<Image>();
             _checkAText = MakeText(R, "", new Vector2(322, 98), new Vector2(180, 22), 12, FontStyle.Normal, Color.black);
 
-            Panel(R, new Vector2(516, 96), new Vector2(212, 88), new Color(0.92f, 0.95f, 0.98f));
-            MakeText(R, "检验产物为 CO₂", new Vector2(526, 156), new Vector2(192, 24), 14, FontStyle.Bold, new Color(0.15f, 0.2f, 0.28f));
-            _btnLimewater = MakeButton(R, "澄清石灰水", new Vector2(526, 122), new Vector2(110, 28), OnToggleB).GetComponent<Image>();
-            _checkBText = MakeText(R, "", new Vector2(526, 98), new Vector2(196, 22), 12, FontStyle.Normal, Color.black);
-
-            // 收集装置：集气瓶朝向 / 水槽（与检验分开，避免误以为收集方式属于检验）
-            Panel(R, new Vector2(736, 96), new Vector2(208, 88), new Color(0.90f, 0.94f, 0.97f));
-            MakeText(R, "收集装置", new Vector2(746, 156), new Vector2(100, 24), 14, FontStyle.Bold, new Color(0.15f, 0.2f, 0.28f));
+            // 收集装置：集气瓶朝向 / 水槽
+            Panel(R, new Vector2(516, 96), new Vector2(428, 88), new Color(0.90f, 0.94f, 0.97f));
+            MakeText(R, "收集装置", new Vector2(746, 156), new Vector2(140, 24), 14, FontStyle.Bold, new Color(0.15f, 0.2f, 0.28f));
             _btnUpright = MakeButton(R, "正放", new Vector2(746, 122), new Vector2(62, 28), () => SetCollector("upright")).GetComponent<Image>();
             _btnInverted = MakeButton(R, "倒置", new Vector2(812, 122), new Vector2(62, 28), () => SetCollector("inverted")).GetComponent<Image>();
             _btnWater = MakeButton(R, "排水", new Vector2(878, 122), new Vector2(62, 28), () => SetCollector("water")).GetComponent<Image>();
@@ -439,15 +437,14 @@ namespace Vchem.UI
                 rg.ReagentId = id; rg.IsSolid = true; rg.IconName = "reagent.solid"; rg.Owner = this;
             }
             MakeText(parent, "液体试剂（拖到长颈漏斗上）", new Vector2(16, 388), new Vector2(286, 22), 14, FontStyle.Bold, new Color(0.15f, 0.2f, 0.28f));
-            string[] liquids = { "reagent.hcl_dilute", "reagent.hcl_conc", "reagent.h2so4_dilute", "reagent.water", "reagent.limewater" };
+            // 2026-11-23：暂撤澄清石灰水检验卡。判定链仍按默认 Identity=limewater 运行。
+            string[] liquids = { "reagent.hcl_dilute", "reagent.hcl_conc", "reagent.h2so4_dilute", "reagent.water" };
             for (int i = 0; i < liquids.Length; i++)
             {
                 string id = liquids[i];
                 float x = 16 + (i % 2) * 142, y = 326 - (i / 2) * 64;
-                bool isTest = id == "reagent.limewater";
-                GameObject card = Card(parent, new Vector2(x, y), new Vector2(136, 58),
-                    () => { if (isTest) SelectIdentity(); else SelectLiquid(id); });
-                if (!isTest) _reagentCardBg[id] = card.GetComponent<Image>();
+                GameObject card = Card(parent, new Vector2(x, y), new Vector2(136, 58), () => SelectLiquid(id));
+                _reagentCardBg[id] = card.GetComponent<Image>();
                 MakeGlyph(card.transform, "reagent.liquid", new Vector2(6, 6), 0.36f);
                 MakeText(card.transform, ReagentNameOf(id), new Vector2(48, 8), new Vector2(86, 44),
                     12, FontStyle.Normal, new Color(0.12f, 0.16f, 0.22f));
@@ -503,7 +500,7 @@ namespace Vchem.UI
             ReagentDb.Reagent def = ReagentDb.Get(reagentId);
             if (def != null && def.Role == "test")
             {
-                SetCaption("〔" + def.Name + "〕是检验用试剂，请点它放入〔检验产物为 CO₂〕模块，不要加到反应容器里");
+                SetCaption("本阶段暂不进行澄清石灰水检验；请从液体试剂中选择加液试剂");
                 return;
             }
 
@@ -663,7 +660,7 @@ namespace Vchem.UI
             }
             if (def.Role == "test")
             {
-                SetCaption("〔" + def.Name + "〕是检验用试剂，请放入〔检验产物为 CO₂〕模块，不要加到反应容器或漏斗里");
+                SetCaption("本阶段暂不进行澄清石灰水检验；请从液体试剂中选择加液试剂");
                 return;
             }
 
@@ -3094,8 +3091,9 @@ namespace Vchem.UI
             _checkAText.text = water ? "排水法·自动看瓶口气泡"
                 : splint ? "燃着木条置于瓶口" : "未验满";
             _checkAText.color = water || splint ? Color.black : C_SlotEmpty;
-            _checkBText.text = lime ? "气体通入澄清石灰水" : "未检验";
-            _checkBText.color = lime ? Color.black : C_SlotEmpty;
+            // 2026-11-23：检验模块已暂撤，_checkBText / _btnLimewater 为 null，跳过刷新。
+            // 底层 State.Identity 保持默认 limewater，判定链不变。
+            if (_checkBText != null) { _checkBText.text = lime ? "气体通入澄清石灰水" : "未检验"; _checkBText.color = lime ? Color.black : C_SlotEmpty; }
             if (_btnSplint != null) _btnSplint.color = splint ? C_ModeOn : C_ModeOff;
             if (_btnMouthBubble != null) _btnMouthBubble.color = water ? C_ModeOn : C_ModeOff;
             if (_btnLimewater != null) _btnLimewater.color = lime ? C_ModeOn : C_ModeOff;

@@ -311,35 +311,38 @@ namespace Vchem.Showcase
                 _mist.color = new Color(0.88f, 0.90f, 0.92f, 0.18f + 0.22f * s.WhiteMist);
             }
 
-            // 验满火焰：burning/extinguishing 可见，extinguished 隐藏。
-            bool flameOn = s.Flame == "burning" || s.Flame == "extinguishing";
+            // 验满：火焰只在 burning/extinguishing 可见；木条熄灭后保留到竖直上撤完成。
+            bool flameVisible = s.Flame == "burning" || s.Flame == "extinguishing";
+            bool splintVisible = flameVisible || (s.Flame == "extinguished" && s.FlameWithdraw < 1f);
             GameObject flameGroup = GroupOrNull("flame");
-            if (flameGroup == null) flameOn = false;
-            else flameGroup.SetActive(flameOn);
-            if (flameOn)
+            if (flameGroup == null) { flameVisible = false; splintVisible = false; }
+            else flameGroup.SetActive(splintVisible);
+            if (splintVisible)
             {
-                float shake = s.Flame == "extinguishing" ? Mathf.Sin(s.T * 46f) * 0.004f : 0f;
                 // §10.29 木条竖直倒持：燃烧端（下端）贴近瓶口，主体向上延伸（参考实拍）。
                 // 内置 Cylinder pivot 在中心、scale.y=半高，故木条中心 = 燃烧端 + 半长。
-                // 原实现是横持倾斜（Euler z=-22°），与"倒着伸向瓶口"的实拍姿态相反。
                 const float halfLen = 0.045f;          // 木条半长（m），全长 90mm
-                // §10.39：从瓶口上方 85mm 处竖直下探到瓶口上方 11mm；
-                // FlameApproach=1 后一直停在瓶口燃烧，熄灭也发生在瓶口。
-                float tipY = _jarMouth.y + Mathf.Lerp(0.085f, 0.011f, s.FlameApproach);
-                float sx = _jarMouth.x - 0.010f + shake; // 略偏屏幕右，避开左端进气导管
+                // §10.39：从瓶口上方 85mm 竖直下探到 11mm；熄灭后只沿 Y 轴上撤，X/Z 恒定。
+                float tipY = _jarMouth.y + Mathf.Lerp(0.085f, 0.011f, s.FlameApproach)
+                                         + 0.16f * s.FlameWithdraw;
+                float sx = _jarMouth.x - 0.010f; // 横向位置恒定，全程不做水平抖动
                 Transform splint = flameGroup.transform.Find("Splint");
                 splint.position = new Vector3(sx, tipY + halfLen, _jarMouth.z);
                 splint.rotation = Quaternion.identity; // 竖直，不倾斜
                 splint.localScale = new Vector3(0.0035f, halfLen, 0.0035f);
                 Transform fl = flameGroup.transform.Find("Flame");
-                fl.position = new Vector3(sx, tipY + 0.004f, _jarMouth.z);
-                // §10.40：用状态里的 FlameFade，不再硬编码旧检验时刻 21.9s。
-                float fsz = Mathf.Max(0.01f, 0.030f * s.FlameFade);
-                fl.localScale = new Vector3(fsz * 0.7f, fsz * 1.6f, 1f);
-                // H8：把模拟时间写进材质，shader 用 _ShowcaseT 取代 _Time.y，保证同 t 像素一致。
-                if (_flame != null && _flame.HasProperty("_ShowcaseT"))
-                    _flame.SetFloat("_ShowcaseT", s.T);
-                FaceCamera(fl);
+                if (fl != null) fl.gameObject.SetActive(flameVisible);
+                if (flameVisible && fl != null)
+                {
+                    fl.position = new Vector3(sx, tipY + 0.004f, _jarMouth.z);
+                    // §10.40：用状态里的 FlameFade，不再硬编码旧检验时刻 21.9s。
+                    float fsz = Mathf.Max(0.01f, 0.030f * s.FlameFade);
+                    fl.localScale = new Vector3(fsz * 0.7f, fsz * 1.6f, 1f);
+                    // H8：把模拟时间写进材质，shader 用 _ShowcaseT 取代 _Time.y，保证同 t 像素一致。
+                    if (_flame != null && _flame.HasProperty("_ShowcaseT"))
+                        _flame.SetFloat("_ShowcaseT", s.T);
+                    FaceCamera(fl);
+                }
             }
 
             // 瓶口气泡（排水法）。
@@ -429,11 +432,13 @@ namespace Vchem.Showcase
                 ApplyConduitWithdraw(ease);
             }
 
-            // 石灰水：幕二出现，浑浊度驱动 shader 的 _Turbidity。
+            // 石灰水：2026-11-23 暂撤演示表现。试管常隐，浑浊度不再驱动渲染；
+            // 时间轴的 turbidity 事件与 ShowcaseState.Turbidity 仍保留（G3 断言与恢复路径依赖）。
+            // 恢复时把下面的 false 改回 stage2 即可。
             GameObject lime = _groups["limewater"];
-            lime.SetActive(stage2);
-            if (!stage2) _limewaterBody.SetFloat("_Turbidity", 0f);
-            if (stage2)
+            lime.SetActive(false);
+            _limewaterBody.SetFloat("_Turbidity", 0f);
+            if (false && stage2)
             {
                 float lh = 0.052f;
                 SetCylinder(lime.transform.Find("TestTubeLiquid"), _testTubePos + Vector3.up * lh * 0.5f,

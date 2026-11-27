@@ -24,16 +24,21 @@ namespace Vchem.Showcase
         // ---- 标准方案：文案保持不变，保证既有验收与用户预期一致 ----
         private static string Standard(ShowcaseState s)
         {
-            if (s.Turbidity > 0.1f) return "实验完成 · CO₂ 已成功制取并集满，验满成立";
+            // 2026-11-23：暂撤澄清石灰水检验表现。收尾直接进入"实验完成"，不再依赖浑浊度。
+            // 熄灭后进入转场/幕二（木条已撤走）即视为完成；熄灭前仍显示验满过程。
+            bool finished = s.Flame == "extinguished" &&
+                            (s.Stage == "2" || s.Stage == "transition" || s.CoverSlide > 0.01f);
+            if (finished) return "实验完成 · CO₂ 已成功制取并集满，验满成立";
             if (s.Flame != "none")
                 return s.FlameKept
                     ? "检验 · 燃着的木条在瓶口持续燃烧，CO₂ 未收集满"
                     : "验满 · 燃着的木条伸到瓶口后熄灭，CO₂ 已集满";
-            if (s.Stage == "2") return "幕二 · 收集完成，实验结束";
+            if (s.Stage == "2" || s.Turbidity > 0.1f)
+                return "实验完成 · CO₂ 已成功制取并集满，验满成立";
             if (s.Bubbles > 0.05f) return "反应中 · 大理石与稀盐酸反应放出 CO₂，气体经导管导入集气瓶";
             if (s.LiquidLevel > 0.01f || s.FeedFlow > 0.05f)
                 return "加液 · 稀盐酸经长颈漏斗流入锥形瓶，浸没大理石";
-            return "装置就绪 · 制取一瓶 CO₂ 并验满、检验";
+            return "装置就绪 · 制取一瓶 CO₂ 并验满";
         }
 
         // 干扰项的结果幕不能用 s.Stage=="2" 判断：错法时间轴的 stage=2 事件只在
@@ -70,3 +75,4 @@ namespace Vchem.Showcase
         }
     }
 }
+

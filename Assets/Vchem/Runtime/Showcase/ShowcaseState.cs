@@ -30,6 +30,8 @@ namespace Vchem.Showcase
         public string Flame = "none";
         /// <summary>验满木条下探进度：0=瓶口上方（刚开始检验），1=已停在瓶口。</summary>
         public float FlameApproach;
+        /// <summary>熄灭后木条竖直上撤进度：0=仍在瓶口，1=已撤出瓶口区域。</summary>
+        public float FlameWithdraw;
         /// <summary>本次检验结果是否"木条继续燃烧"（未集满 / 未成功制取）。</summary>
         public bool FlameKept;
         /// <summary>火焰强度 1→0：burning=1，extinguishing 在 0.8s 内衰减，extinguished=0。</summary>
@@ -67,11 +69,13 @@ namespace Vchem.Showcase
                 "t={0:F3}|stage={1}|feed={2:F3}|bub={3:F3}|liq={4:F3}|water={5:F3}|" +
                 "turb={6:F3}|mist={7:F3}|flame={8}|mouth={9:F3}|cam={10:F3}|" +
                 "cum={11:F2}|arr={12:F2}|held={13:F2}|bullet={14}|dzd={15:F3}|pitch={16:F2}|" +
-                "cvsl={17:F3}|cvsl2={18:F3}|wdraw={19:F3}|approach={20:F3}|kept={21}|fade={22:F3}",
+                "cvsl={17:F3}|cvsl2={18:F3}|wdraw={19:F3}|approach={20:F3}|kept={21}|fade={22:F3}|" +
+                "withdraw={23:F3}",
                 T, Stage, FeedFlow, Bubbles, LiquidLevel, WaterLevel,
                 Turbidity, WhiteMist, Flame, MouthBubble, CameraPush,
                 CumulativeMl, ArrivedMl, HeldMl, Bullet, CameraPushDz, CameraPushPitch,
-                CoverSlide, CoverSeal, ConduitWithdraw, FlameApproach, FlameKept ? 1 : 0, FlameFade);
+                CoverSlide, CoverSeal, ConduitWithdraw, FlameApproach, FlameKept ? 1 : 0,
+                FlameFade, FlameWithdraw);
         }
     }
 }

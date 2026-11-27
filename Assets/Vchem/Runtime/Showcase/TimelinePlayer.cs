@@ -46,6 +46,8 @@ namespace Vchem.Showcase
         private readonly List<BubbleKey> _bubbleKeys = new List<BubbleKey>();
         /// <summary>M6：时间轴是否显式声明过 liquid.level；有则不再用累计产气兜底覆盖显式 0（空瓶）。</summary>
         private bool _hasLiquidEvent;
+        /// <summary>§10.39：预处理的验满结果时刻。下探发生在 full 之前，不能等事件循环走到 flameAt 才算窗口。</summary>
+        private float _verifyFullAt = -1f;
         public string ClassName { get; private set; }
         /// <summary>M1：时间轴声明其配套方案文件（如 R-OK-01.plan.json），用于换轴时防错配。</summary>
         public string PlanName { get; private set; }
@@ -130,6 +132,9 @@ namespace Vchem.Showcase
                     }
                     case "liquid.level":
                         p._hasLiquidEvent = true;
+                        break;
+                    case "verify.full":
+                        if (p._verifyFullAt < 0f) p._verifyFullAt = e.T;
                         break;
                 }
             }
@@ -264,14 +269,17 @@ namespace Vchem.Showcase
             // 纯函数：只依赖 t 与两个事件时刻，Seek 可回退。
             if (s.Flame != "none" && flameBeginAt >= 0f)
             {
-                float spanToResult = MathfMax(0.1f, flameAt - flameBeginAt);
+                // 结果时刻在 full 事件里，下探阶段它还没进入事件循环；
+                // 用预处理得到的 _verifyFullAt，否则 flameAt=-1 会把窗口算成 0.1s，木条一出现就贴在瓶口。
+                float resultAt = _verifyFullAt >= 0f ? _verifyFullAt : flameAt;
+                float spanToResult = MathfMax(0.1f, resultAt - flameBeginAt);
                 float approachSec = MathfMax(0.25f, spanToResult - 0.5f);
                 if (approachSec > spanToResult) approachSec = spanToResult;
                 s.FlameApproach = MathfClamp01((t - flameBeginAt) / approachSec);
             }
             else s.FlameApproach = 1f;
 
-            // 火焰"先抖后灭"：extinguishing 0.8s 内强度衰减，之后熄灭。
+            // 火焰在 0.8s 内衰减到熄灭；不再给木条加水平抖动。
             // §10.40：衰减量由 flameAt 纯函数推出，不再让演出层硬编码检验时刻。
             if (flameAt >= 0f && s.Flame == "extinguishing")
             {
@@ -281,11 +289,16 @@ namespace Vchem.Showcase
             else if (s.Flame == "burning") s.FlameFade = 1f;
             else if (s.Flame == "extinguished") s.FlameFade = 0f;
 
+            // §10.39：熄灭后木条竖直上撤 0.6s，全程无水平位移；上撤完成才开始盖片。
+            // withdrawAt 只由 flameAt 与结果类型推出，仍是纯函数，Seek 可回退。
+            float withdrawAt = (flameAt >= 0f && flameExtinguishes) ? flameAt + 0.8f : -1f;
+            s.FlameWithdraw = withdrawAt < 0f ? 0f : MathfClamp01((t - withdrawAt) / 0.6f);
+
             // 熄灭后收尾三段（§10.25），全部由 t 与 flameAt 确定性推出，可 Seek：
             // A 玻璃片从右侧滑到贴住导管（0.6s）→ B 扭转并撤下导管（0.9s）→
-            // C 玻璃片滑到完全盖住瓶口（0.7s）。以火焰真正熄灭的时刻为基准。
+            // C 玻璃片滑到完全盖住瓶口（0.7s）。以木条撤离瓶口的时刻为基准，避免盖片与木条交叉。
             // §10.39：只有"木条熄灭"才收口；木条持续燃烧（CO₂ 未集满/未制取）不得盖片撤管。
-            float outAt = (flameAt >= 0f && flameExtinguishes) ? flameAt + 0.8f : -1f;
+            float outAt = withdrawAt < 0f ? -1f : withdrawAt + 0.6f;
             s.CoverSlide = outAt < 0f ? 0f : MathfClamp01((t - outAt) / 0.6f);
             s.ConduitWithdraw = outAt < 0f ? 0f : MathfClamp01((t - outAt - 0.6f) / 0.9f);
             s.CoverSeal = outAt < 0f ? 0f : MathfClamp01((t - outAt - 1.5f) / 0.7f);
